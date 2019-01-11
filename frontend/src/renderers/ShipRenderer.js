@@ -20,6 +20,5 @@ export default function shipRenderer(ship) {
     graphics.position.y = y;
   }, { fireImmediately: true});
 
-  window.test = ship;
   return graphics;
 }

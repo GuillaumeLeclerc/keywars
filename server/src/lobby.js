@@ -1,7 +1,7 @@
-import game from './game';
+import Game from './game';
 
-class Lobby {
-  members = Set();
+export default class Lobby {
+  members = new Set();
 
   constructor() {
   }
@@ -24,7 +24,7 @@ class Lobby {
   }
 
   match() {
-    if (this.members.size < 2) {
+    if (this.members.size < 1) {
       return;
     }
 
@@ -32,9 +32,12 @@ class Lobby {
     const match = [];
     for (let client of this.members) {
       match.push(client);
-      if (i++ > 1) {
+      this.quit(client);
+      if (i++ > 0) {
         break;
       }
     }
+
+    new Game(match);
   }
 }

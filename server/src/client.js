@@ -12,9 +12,15 @@ export default class Client {
 
   constructor(socket) {
     this.socket = socket;
+
+    this.socket.on('authenticate', content => {
+      const info = new ClientInfo(content);
+      this.authenticate(info);
+    });
   }
 
   authenticate(clientInfo) {
     this.info = clientInfo;
+    this.socket.emit('authenticated');
   }
 }

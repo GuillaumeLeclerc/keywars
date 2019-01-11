@@ -32,6 +32,6 @@ export default class TypingManager {
 
   detach() {
     document.removeEventListener("keypress", this.onKeyPress);
-    document.removeEventListener("keypress", this.onKeyDown);
+    document.removeEventListener("keydown", this.onKeyDown);
   }
 }

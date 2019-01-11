@@ -1,4 +1,4 @@
-import { observable } from 'mobx';
+import { action, observable } from 'mobx';
 
 export default class Ship {
 
@@ -7,5 +7,11 @@ export default class Ship {
 
   constructor(isMe) {
     this.isMe = isMe;
+  }
+
+  @action
+  update(data) {
+    this.x = data.position.x;
+    this.y = data.position.y;
   }
 };
