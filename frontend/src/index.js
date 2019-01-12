@@ -14,12 +14,3 @@ const query = WebFont.load({
     socketManager.authenticate();
   }
 });
-
-const el = document.createElement('div');
-const font = `"${toto}"`;
-console.log(powerupFont);
-el.style.fontFamily = font;
-el.style.fontSize = "50px";
-el.innerText = "Hello world";
-document.body.appendChild(el);
-

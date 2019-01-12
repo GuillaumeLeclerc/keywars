@@ -4,11 +4,25 @@ export default class TypingManager {
 
   @observable content = "";
 
-  constructor() {
+  acceptedWords = new Set();
+
+  constructor(onMatch) {
+    this.onMatch = onMatch;
+
     this.onKeyPress = action((event) => {
       const { key } = event;
       if (key.length == 1) {
         this.content = this.content + key;
+        for (let id in this.acceptedWords) {
+          const word = this.acceptedWords[id];
+          if (word === this.content) {
+            this.discardWord(id);
+            if (typeof this.onMatch === 'function') {
+              this.onMatch(this.content);
+              this.content = "";
+            }
+          }
+        }
         event.preventDefault();
       }
     });
@@ -33,5 +47,13 @@ export default class TypingManager {
   detach() {
     document.removeEventListener("keypress", this.onKeyPress);
     document.removeEventListener("keydown", this.onKeyDown);
+  }
+
+  registerWord(id, word) {
+    this.acceptedWords[id] = word;
+  }
+
+  discardWord(id) {
+    delete this.acceptedWords[id]
   }
 }

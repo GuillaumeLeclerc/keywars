@@ -16,6 +16,11 @@ export default class Game {
     this.engine = Engine.create();
     this.runner = Runner.create();
 
+    this.ammoPowerUpManager = new AmmoPowerUpManager(
+      this.engine.world,
+      this.broadcast.bind(this)
+    );
+
     this.laserManager = new LaserManager(this.engine.world);
 
     this.engine.world.gravity.x = 0;
@@ -35,16 +40,14 @@ export default class Game {
     this.ships = players.map(player => {
       const ship = new Ship(this.laserManager);
       World.add(this.engine.world, ship.body);
+      player.socket.on("typed-word", word => {
+        this.ammoPowerUpManager.wordTyped(word, player);
+      });
       return ship;
     });
 
     this.borders = new Borders();
     World.add(this.engine.world, this.borders.body)
-
-    this.ammoPowerUpManager = new AmmoPowerUpManager(
-      this.engine.world,
-      this.broadcast.bind(this)
-    );
 
     this.players = players;
     this.lastTime = new Date().getTime();

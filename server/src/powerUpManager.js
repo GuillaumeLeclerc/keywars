@@ -75,7 +75,7 @@ class PowerUpManager {
 
   async add() {
     const id = uuid.v4();
-    const powerUp = new PowerUp('you are a cunt', 'hoho', 100, {x: 400, y:300});
+    const powerUp = new PowerUp('hoho', 'hoho', 100, {x: 400, y:300});
     await powerUp.prepare();
     this.powerUps.set(id, powerUp);
     World.add(this.world, powerUp.body);
@@ -86,7 +86,8 @@ class PowerUpManager {
       position: powerUp.body.position,
       dimensions: powerUp.dimensions,
       toDisplay: powerUp.toDisplay,
-      fontSize: FONT_SIZE
+      fontSize: FONT_SIZE,
+      textToType: powerUp.textToType
     });
     this.broadcast('new-powerup', message);
   }
@@ -98,11 +99,39 @@ class PowerUpManager {
 
     return this.reportBase;
   }
+
+  delete(id) {
+    const powerUp = this.powerUps.get(id);
+    World.remove(this.world, powerUp.body);
+    this.powerUps.delete(id);
+    delete this.reportBase[id];
+    this.broadcast('delete-powerup', {
+      id: powerUp.id,
+    });
+  }
+
+  wordTyped(word, player) {
+    for (let [id, powerUp] of this.powerUps) {
+      if (powerUp.textToType === word) {
+        this.applyPowerUp(powerUp, player);
+        this.delete(id);
+        break;
+      }
+    }
+  }
+
+  applyPowerUp() {
+    throw "override me";
+  }
 }
 
 export class AmmoPowerUpManager extends PowerUpManager {
   generateMessage() {
     return {'mesage': 'you are a cunt'};
+  }
+
+  applyPowerUp() {
+    console.log('doing nothing');
   }
 }
 

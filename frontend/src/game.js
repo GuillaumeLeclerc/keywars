@@ -11,7 +11,6 @@ import ShipControlsManager from './shipControlsManager';
 import RemoteEntityTracker from './remoteEntityTracker';
 
 
-
 export default class Game {
 
   constructor(socket, container) {
@@ -22,7 +21,9 @@ export default class Game {
 
     this.ships = [new Entity2D()];
 
-    this.typingManager = new TypingManager();
+    this.typingManager = new TypingManager(word => {
+      socket.emit('typed-word', word);
+    });
     this.typingManager.attach();
 
     this.shipControlsManager = new ShipControlsManager(this.socket);
@@ -56,6 +57,14 @@ export default class Game {
     this.app.stage.addChild(typingRenderer(this.typingManager));
 
     this.socket.on('game-update', this.update.bind(this));
+
+    this.socket.on('new-powerup', ({textToType, id}) => {
+      this.typingManager.registerWord(id, textToType);
+    })
+
+    this.socket.on('delete-powerup', ({id}) => {
+      this.typingManager.discardWord(id);
+    });
   }
 
   update(state) {
