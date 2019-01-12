@@ -1,17 +1,17 @@
 import { action, observable } from 'mobx';
 
-export default class Ship {
+export default class Entity2D {
 
-  @observable x = 100;
-  @observable y = 100;
-
-  constructor(isMe) {
-    this.isMe = isMe;
-  }
+  @observable x = 0;
+  @observable y = 0;
 
   @action
   update(data) {
     this.x = data.position.x;
     this.y = data.position.y;
+  }
+
+  destroy() {
+    // does nothing
   }
 };

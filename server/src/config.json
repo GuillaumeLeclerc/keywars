@@ -1,0 +1,6 @@
+{
+    "GAME_SIZE": {"x": 800, "y":600},
+    "BORDER_SIZE": 1000,
+    "NO_MANS_LAND_SIZE": 100,
+    "FONT_SIZE": "25px"
+}

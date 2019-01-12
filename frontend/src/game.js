@@ -1,10 +1,15 @@
 import * as PIXI from 'pixi.js'
 
-import Ship from './entities/Ship';
+import Entity2D from './entities/2DEntity';
+import PowerUp from './entities/PowerUp';
 import shipRenderer from './renderers/ShipRenderer';
+import laserRenderer from './renderers/laserRenderer'
+import powerUpRenderer from './renderers/powerUpRender';
 import typingRenderer from './renderers/typingRenderer';
 import TypingManager from './TypingManager';
 import ShipControlsManager from './shipControlsManager';
+import RemoteEntityTracker from './remoteEntityTracker';
+
 
 
 export default class Game {
@@ -15,14 +20,33 @@ export default class Game {
       backgroundColor : 0x1099bb
     });
 
-    this.ships = [new Ship(true)];
+    this.ships = [new Entity2D()];
 
     this.typingManager = new TypingManager();
     this.typingManager.attach();
 
     this.shipControlsManager = new ShipControlsManager(this.socket);
+    // TODO detach
     this.shipControlsManager.attach();
 
+    this.trackers = [
+      new RemoteEntityTracker(
+        'laser',
+        Entity2D,
+        laserRenderer,
+        this.app.stage,
+        this.socket
+      ),
+      new RemoteEntityTracker(
+        'powerup',
+        PowerUp,
+        powerUpRenderer,
+        this.app.stage,
+        this.socket
+      )
+    ];
+
+    // TODO remove
     container.appendChild(this.app.view);
 
     for (let ship of this.ships) {
@@ -38,5 +62,8 @@ export default class Game {
     this.ships.forEach((ship, i) => {
       ship.update(state.ships[i]);
     });
+    for (let tracker of this.trackers) {
+      tracker.update(state[tracker.name]);
+    }
   }
 }

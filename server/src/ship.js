@@ -1,6 +1,6 @@
-import { Body, Bodies } from 'matter-js';
+import { Body, Bodies, Vector } from 'matter-js';
 
-const FORCE_FACTOR = 10000;
+const FORCE_FACTOR = 1000
 const FRICTION_AIR = 0.1;
 
 const DIR_TO_FORCE = {
@@ -12,19 +12,26 @@ const DIR_TO_FORCE = {
 
 export default class Ship {
 
-  constructor() {
-    this.body = Bodies.rectangle(450, 50, 80, 80)
-    console.log(this.body);
+  constructor(laserManager) {
+    this.laserManager = laserManager;
+    this.body = Bodies.rectangle(450, 50, 10, 10)
     this.body.frictionAir = FRICTION_AIR;
+    this.shootingDirection = Vector.create(0, -10);
     Body.setVelocity(this.body, {x:0, y:0});
   }
 
   applyKeys(keyState) {
-    for (let direction in keyState) {
+    for (let direction in DIR_TO_FORCE) {
       if (keyState[direction]) {
-        console.log("moving", direction)
         Body.applyForce(this.body, this.body.position, DIR_TO_FORCE[direction]);
       }
+    }
+
+    if (keyState['Enter']) {
+      this.laserManager.shoot(
+        this.body.position,
+        this.shootingDirection
+      );
     }
   }
 

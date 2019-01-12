@@ -3,7 +3,8 @@ const ALLOWED_KEYS = new Set([
   'ArrowRight',
   'ArrowLeft',
   'ArrowDown',
-  'ArrowUp'
+  'ArrowUp',
+  'Enter'
 ]);
 export default class ShipControlManager {
 

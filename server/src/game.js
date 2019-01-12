@@ -1,6 +1,9 @@
 import { Engine, Render, Runner, World, Bodies } from 'matter-js';
 
 import Ship from './ship';
+import LaserManager from './laser';
+import Borders from './borders';
+import { AmmoPowerUpManager } from './powerUpManager';
 
 const TARGET_FPS = 60;
 
@@ -12,6 +15,8 @@ export default class Game {
 
     this.engine = Engine.create();
     this.runner = Runner.create();
+
+    this.laserManager = new LaserManager(this.engine.world);
 
     this.engine.world.gravity.x = 0;
     this.engine.world.gravity.y = 0;
@@ -28,10 +33,18 @@ export default class Game {
     });
 
     this.ships = players.map(player => {
-      const ship = new Ship();
+      const ship = new Ship(this.laserManager);
       World.add(this.engine.world, ship.body);
       return ship;
     });
+
+    this.borders = new Borders();
+    World.add(this.engine.world, this.borders.body)
+
+    this.ammoPowerUpManager = new AmmoPowerUpManager(
+      this.engine.world,
+      this.broadcast.bind(this)
+    );
 
     this.players = players;
     this.lastTime = new Date().getTime();
@@ -44,12 +57,17 @@ export default class Game {
     const delta = (newTime - this.lastTime) / 1000;
 
     for (let i = 0; i < this.players.length ; ++i) {
-      this.ships[i].applyKeys(this.keyStates[i]);
+      this.ships[i].applyKeys(this.keyStates[i], this.engine.world);
     }
 
     Engine.update(this.engine, delta);
+
+    this.laserManager.prune();
+
     const updateReport = {
-      ships: this.ships.map(x => x.report())
+      ships: this.ships.map(x => x.report()),
+      laser: this.laserManager.report(),
+      powerup: this.ammoPowerUpManager.report(),
     }
     this.broadcast('game-update', updateReport);
     this.lastTime = newTime;

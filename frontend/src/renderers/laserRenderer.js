@@ -3,20 +3,21 @@ import { reaction } from 'mobx';
 
 const { Graphics } = PIXI;
 
-const SIZE = 5;
+const SIZE = 3;
 
-export default function shipRenderer(ship) {
+export default function laserRenderer(entity) {
+
   const graphics = new Graphics();
 
   graphics.beginFill(0xFFFF00);
   graphics.lineStyle(1, 0xFF0000);
-  graphics.drawRect(-SIZE, -SIZE, 2 * SIZE, 2 * SIZE);
+  graphics.drawRect(-5, -5, 10, 10);
 
-  reaction(() => ship.x, (x) => {
+  reaction(() => entity.x, (x) => {
     graphics.position.x = x;
   }, { fireImmediately: true});
 
-  reaction(() => ship.y, (y) => {
+  reaction(() => entity.y, (y) => {
     graphics.position.y = y;
   }, { fireImmediately: true});
 

@@ -19,7 +19,7 @@ export default class TypingManager {
         this.content = this.content.slice(0, this.content.length - 1);
         event.preventDefault();
       }
-      else if (key == "Enter" || key == " ") {
+      else if (key == " ") {
         this.content = "";
       }
     });
