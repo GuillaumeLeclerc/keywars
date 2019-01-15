@@ -3,7 +3,12 @@ import textToPng from 'text2png';
 import workerpool from 'workerpool';
 import uuid from 'uuid';
 
-import { FONT_SIZE } from './config.json'
+import {
+  GAME_SIZE,
+  FONT_SIZE,
+  POWERUP_PROB,
+  MAX_POWERUPS
+} from './config.json'
 
 import fs from 'fs';
 
@@ -47,11 +52,27 @@ class PowerUp {
       this.position.x, this.position.y,
       this.dimensions.width,
       this.dimensions.height,
-      {
-        isSensor: true,
-        isStatic: true
-      }
     );
+    this.body.friction = 0;
+    this.body.frictionAir = 0;
+    this.body.restitution = 1;
+
+    Body.setPosition(this.body, {
+      x: GAME_SIZE.x / 2,
+      y: GAME_SIZE.y / 2
+    });
+
+    // const y = Math.random() * 2 - 1;
+    const y = 0;
+
+    Body.setVelocity(this.body, {
+      x: Math.sqrt(1 - y * y),
+      y
+    });
+  }
+
+  step() {
+    // console.log(this.body.velocity);
   }
 }
 
@@ -59,23 +80,33 @@ class PowerUpManager {
 
   powerUps = new Map();
 
-  constructor(world, broadcast) {
+  constructor(world, broadcast, words) {
     this.world = world;
-    this.reportBase = {};
     this.broadcast = broadcast;
+    this.words = words;
+    this.count = 0;
 
-    setTimeout(() => {
+    this.reportBase = {};
+  }
+
+  generate() {
+    if (this.count < MAX_POWERUPS && Math.random() < POWERUP_PROB) {
       this.add();
-    }, 1000);
+    }
   }
 
   generateMessage(powerUp) {
     throw "Override this class please";
   }
 
+
+
   async add() {
+    this.count ++;
     const id = uuid.v4();
-    const powerUp = new PowerUp('hoho', 'hoho', 100, {x: 400, y:300});
+    const wordIx = Math.ceil(Math.random() * this.words.length);
+    const [toDisplay, toType] = this.words[wordIx];
+    const powerUp = new PowerUp(toDisplay, toType, 100, {x: 400, y:300});
     await powerUp.prepare();
     this.powerUps.set(id, powerUp);
     World.add(this.world, powerUp.body);
@@ -101,6 +132,7 @@ class PowerUpManager {
   }
 
   delete(id) {
+    this.count --;
     const powerUp = this.powerUps.get(id);
     World.remove(this.world, powerUp.body);
     this.powerUps.delete(id);
@@ -117,6 +149,12 @@ class PowerUpManager {
         this.delete(id);
         break;
       }
+    }
+  }
+
+  step() {
+    for (let powerUp of this.powerUps.values()) {
+      powerUp.step();
     }
   }
 

@@ -5,20 +5,25 @@ import LaserManager from './laser';
 import Borders from './borders';
 import { AmmoPowerUpManager } from './powerUpManager';
 
-const TARGET_FPS = 60;
+const TARGET_FPS = 500;
 
 export default class Game {
-  constructor(players) {
+  constructor(players, gameDictPath) {
     // if (players.length != 2) {
     //   throw "This is a two players game";
     // }
 
+    this.words = []
+    this.gameDictPath = gameDictPath;
+
     this.engine = Engine.create();
     this.runner = Runner.create();
+    this.loadGameDict();
 
     this.ammoPowerUpManager = new AmmoPowerUpManager(
       this.engine.world,
-      this.broadcast.bind(this)
+      this.broadcast.bind(this),
+      this.words
     );
 
     this.laserManager = new LaserManager(this.engine.world);
@@ -55,6 +60,15 @@ export default class Game {
     this.interval = setInterval(this.step.bind(this), 1 / TARGET_FPS * 1000);
   }
 
+  loadGameDict() {
+    console.log(process.cwd());
+    // const dictLoaded = require('../../assets/datasets/' + this.gameDictPath);
+    const dictLoaded = require('../assets/datasets/medium-english.json');
+    for (let key in dictLoaded) {
+      this.words.push([key, dictLoaded[key]]);
+    }
+  }
+
   step() {
     const newTime = new Date().getTime();
     const delta = (newTime - this.lastTime) / 1000;
@@ -62,6 +76,9 @@ export default class Game {
     for (let i = 0; i < this.players.length ; ++i) {
       this.ships[i].applyKeys(this.keyStates[i], this.engine.world);
     }
+
+    this.ammoPowerUpManager.generate();
+    this.ammoPowerUpManager.step();
 
     Engine.update(this.engine, delta);
 

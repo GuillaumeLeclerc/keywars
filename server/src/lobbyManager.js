@@ -6,7 +6,7 @@ export default class LobbyManager {
   clients = new Set();
 
   constructor() {
-    this.mainLobby = new Lobby();
+    this.mainLobby = new Lobby('medium-english.json');
   }
 
   addClient(client) {

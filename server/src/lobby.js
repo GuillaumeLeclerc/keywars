@@ -3,7 +3,8 @@ import Game from './game';
 export default class Lobby {
   members = new Set();
 
-  constructor() {
+  constructor(gameDictPath) {
+    this.gameDictPath = gameDictPath;
   }
 
   join(client) {
@@ -38,6 +39,6 @@ export default class Lobby {
       }
     }
 
-    new Game(match);
+    new Game(match, this.gameDictPath);
   }
 }
