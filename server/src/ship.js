@@ -1,5 +1,7 @@
 import { Body, Bodies, Vector } from 'matter-js';
 
+import { AMMO_START } from './config.json';
+
 const FORCE_FACTOR = 1000
 const FRICTION_AIR = 0.1;
 
@@ -14,7 +16,8 @@ export default class Ship {
 
   constructor(laserManager) {
     this.laserManager = laserManager;
-    this.body = Bodies.rectangle(450, 50, 10, 10)
+    this.ammo = AMMO_START;
+    this.body = Bodies.rectangle(450, 450, 10, 10)
     this.body.frictionAir = FRICTION_AIR;
     this.shootingDirection = Vector.create(0, -10);
     Body.setVelocity(this.body, {x:0, y:0});
@@ -27,7 +30,8 @@ export default class Ship {
       }
     }
 
-    if (keyState['Enter']) {
+    if (keyState['Enter'] && this.ammo > 0) {
+      this.ammo--;
       this.laserManager.shoot(
         this.body.position,
         this.shootingDirection

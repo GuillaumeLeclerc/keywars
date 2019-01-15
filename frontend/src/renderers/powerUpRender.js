@@ -20,19 +20,21 @@ export default function powerUpRenderer(entity) {
 
   const text = new PIXI.Text(entity.toDisplay, {
     fontFamily: powerupFont,
-    fontSize: entity.fontSize
+    fontSize: entity.fontSize + 'px'
   });
 
   const { width, height } = text.getBounds();
+  console.log(text.getBounds())
+  console.log(dimensions)
 
   box.drawRect(
     0, 0,
-    width, height
+    dimensions.width, dimensions.height
   );
   box.position.x = - dimensions.width / 2;
   box.position.y = - dimensions.height / 2;
-  text.position.x = - dimensions.width / 2;
-  text.position.y = - dimensions.height / 2;
+  text.position.x = - dimensions.width / 2 + (dimensions.width - width) / 2;
+  text.position.y = - dimensions.height / 2+ (dimensions.height - height) / 2;
 
   graphics.addChild(box);
   graphics.addChild(text);

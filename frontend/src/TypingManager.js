@@ -11,7 +11,7 @@ export default class TypingManager {
 
     this.onKeyPress = action((event) => {
       const { key } = event;
-      if (key.length == 1) {
+      if (key.length == 1 && key != " ") {
         this.content = this.content + key;
         for (let id in this.acceptedWords) {
           const word = this.acceptedWords[id];

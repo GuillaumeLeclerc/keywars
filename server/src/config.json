@@ -3,7 +3,9 @@
     "BORDER_SIZE": 1000,
     "NO_MANS_LAND_SIZE": 250,
     "NO_MANS_LAND_BORDER_SIZE": 30,
-    "FONT_SIZE": "25px",
+    "FONT_SIZE": 45,
+    "FONT_OFFSET": {"x": 5, "y": 5},
     "POWERUP_PROB": 1e-2,
-    "MAX_POWERUPS": 1
+    "MAX_POWERUPS": 110,
+    "AMMO_START": 30
 }

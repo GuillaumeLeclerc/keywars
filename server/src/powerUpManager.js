@@ -6,8 +6,11 @@ import uuid from 'uuid';
 import {
   GAME_SIZE,
   FONT_SIZE,
+  FONT_OFFSET,
   POWERUP_PROB,
-  MAX_POWERUPS
+  MAX_POWERUPS,
+  NO_MANS_LAND_SIZE,
+  NO_MANS_LAND_BORDER_SIZE
 } from './config.json'
 
 import fs from 'fs';
@@ -17,7 +20,7 @@ const pool = workerpool.pool();
 
 function renderText(text, fontSize) {
   const result = require('text2png')(text, {
-    font: `${fontSize} Space`,
+    font: `${fontSize}px Space`,
     localFontPath: '../frontend/dist/Antaro.ttf',
     localFontName: 'Space'
   });
@@ -31,7 +34,12 @@ function renderText(text, fontSize) {
 function render(text) {
   return pool
     .exec(renderText, [text, FONT_SIZE])
-    .then(([dims, x]) => [dims, Buffer.from(x)]);
+    .then(([dims, x]) => {
+      const result = [dims, Buffer.from(x)]
+      dims.width += FONT_OFFSET.x;
+      dims.height = FONT_OFFSET.y + FONT_SIZE;
+      return result;
+    });
 }
 
 class PowerUp {
@@ -56,19 +64,6 @@ class PowerUp {
     this.body.friction = 0;
     this.body.frictionAir = 0;
     this.body.restitution = 1;
-
-    Body.setPosition(this.body, {
-      x: GAME_SIZE.x / 2,
-      y: GAME_SIZE.y / 2
-    });
-
-    // const y = Math.random() * 2 - 1;
-    const y = 0;
-
-    Body.setVelocity(this.body, {
-      x: Math.sqrt(1 - y * y),
-      y
-    });
   }
 
   step() {
@@ -106,7 +101,12 @@ class PowerUpManager {
     const id = uuid.v4();
     const wordIx = Math.ceil(Math.random() * this.words.length);
     const [toDisplay, toType] = this.words[wordIx];
-    const powerUp = new PowerUp(toDisplay, toType, 100, {x: 400, y:300});
+    const position = {
+      x: Math.random() * GAME_SIZE.x,
+      y: Math.random() * (NO_MANS_LAND_SIZE - 2 * NO_MANS_LAND_BORDER_SIZE) +
+      (GAME_SIZE.y - NO_MANS_LAND_SIZE) / 2 + NO_MANS_LAND_BORDER_SIZE
+    }
+    const powerUp = new PowerUp(toDisplay, toType, 100, position);
     await powerUp.prepare();
     this.powerUps.set(id, powerUp);
     World.add(this.world, powerUp.body);
@@ -168,8 +168,9 @@ export class AmmoPowerUpManager extends PowerUpManager {
     return {'mesage': 'you are a cunt'};
   }
 
-  applyPowerUp() {
-    console.log('doing nothing');
+  applyPowerUp(powerUp, player) {
+    player.ship.ammo += 10;
+    console.log(player)
   }
 }
 

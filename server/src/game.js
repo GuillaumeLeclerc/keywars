@@ -5,7 +5,7 @@ import LaserManager from './laser';
 import Borders from './borders';
 import { AmmoPowerUpManager } from './powerUpManager';
 
-const TARGET_FPS = 500;
+const TARGET_FPS = 60;
 
 export default class Game {
   constructor(players, gameDictPath) {
@@ -44,6 +44,7 @@ export default class Game {
 
     this.ships = players.map(player => {
       const ship = new Ship(this.laserManager);
+      player.ship = ship;
       World.add(this.engine.world, ship.body);
       player.socket.on("typed-word", word => {
         this.ammoPowerUpManager.wordTyped(word, player);
