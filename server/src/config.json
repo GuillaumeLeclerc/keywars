@@ -6,6 +6,6 @@
     "FONT_SIZE": 45,
     "FONT_OFFSET": {"x": 5, "y": 5},
     "POWERUP_PROB": 1e-2,
-    "MAX_POWERUPS": 110,
+    "MAX_POWERUPS": 5,
     "AMMO_START": 30
 }

@@ -9,6 +9,15 @@ export default class LobbyManager {
     this.mainLobby = new Lobby('medium-english.json');
   }
 
+  reportLobbies(socket) {
+    socket.emit('lobby-list', [
+      {
+        name: 'General Lobby',
+        id: 0,
+      }
+    ])
+  }
+
   addClient(client) {
     client.socket.on('lobby-connect', lobbyName => {
       this.connect(client, lobbyName);

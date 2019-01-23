@@ -42,8 +42,8 @@ export default class Game {
       return state;
     });
 
-    this.ships = players.map(player => {
-      const ship = new Ship(this.laserManager);
+    this.ships = players.map((player, i) => {
+      const ship = new Ship(this.laserManager, i % 2 == 0);
       player.ship = ship;
       World.add(this.engine.world, ship.body);
       player.socket.on("typed-word", word => {
@@ -86,7 +86,7 @@ export default class Game {
     this.laserManager.prune();
 
     const updateReport = {
-      ships: this.ships.map(x => x.report()),
+      ship: this.ships.map(x => x.report()),
       laser: this.laserManager.report(),
       powerup: this.ammoPowerUpManager.report(),
     }

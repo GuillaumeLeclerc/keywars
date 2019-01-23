@@ -19,8 +19,6 @@ export default class Game {
       backgroundColor : 0x1099bb
     });
 
-    this.ships = [new Entity2D()];
-
     this.typingManager = new TypingManager(word => {
       socket.emit('typed-word', word);
     });
@@ -31,6 +29,13 @@ export default class Game {
     this.shipControlsManager.attach();
 
     this.trackers = [
+      new RemoteEntityTracker(
+        'ship',
+        Entity2D,
+        shipRenderer,
+        this.app.stage,
+        this.socket
+      ),
       new RemoteEntityTracker(
         'laser',
         Entity2D,
@@ -50,11 +55,7 @@ export default class Game {
     // TODO remove
     container.appendChild(this.app.view);
 
-    for (let ship of this.ships) {
-      this.app.stage.addChild(shipRenderer(ship));
-    }
-
-    this.app.stage.addChild(typingRenderer(this.typingManager));
+    // this.app.stage.addChild(typingRenderer(this.typingManager));
 
     this.socket.on('game-update', this.update.bind(this));
 
@@ -68,9 +69,6 @@ export default class Game {
   }
 
   update(state) {
-    this.ships.forEach((ship, i) => {
-      ship.update(state.ships[i]);
-    });
     for (let tracker of this.trackers) {
       tracker.update(state[tracker.name]);
     }

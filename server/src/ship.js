@@ -1,6 +1,6 @@
 import { Body, Bodies, Vector } from 'matter-js';
 
-import { AMMO_START } from './config.json';
+import { GAME_SIZE, AMMO_START } from './config.json';
 
 const FORCE_FACTOR = 1000
 const FRICTION_AIR = 0.1;
@@ -14,12 +14,14 @@ const DIR_TO_FORCE = {
 
 export default class Ship {
 
-  constructor(laserManager) {
+  constructor(laserManager, team) {
     this.laserManager = laserManager;
     this.ammo = AMMO_START;
-    this.body = Bodies.rectangle(450, 450, 10, 10)
+    const y = team == 0 ? 50 : GAME_SIZE.y - 50; 
+    this.body = Bodies.rectangle(450, y, 10, 10)
     this.body.frictionAir = FRICTION_AIR;
-    this.shootingDirection = Vector.create(0, -10);
+    const factor = team == 0 ? 1 : -1
+    this.shootingDirection = Vector.create(0, factor *10);
     Body.setVelocity(this.body, {x:0, y:0});
   }
 

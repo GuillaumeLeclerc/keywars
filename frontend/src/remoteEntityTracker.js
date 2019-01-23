@@ -1,4 +1,8 @@
+import { observable } from 'mobx';
+
 export default class RemoteObjectTracker {
+
+  @observable
   entities = new Map();
   renderers = new Map();
   keys = new Set();

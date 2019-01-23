@@ -9,7 +9,7 @@ export default class Lobby {
 
   join(client) {
     if (!client.info) {
-      throw "Not authenticated";
+      // throw "Not authenticated";
     }
 
     this.members.add(client);
@@ -25,7 +25,7 @@ export default class Lobby {
   }
 
   match() {
-    if (this.members.size < 1) {
+    if (this.members.size < 2) {
       return;
     }
 
